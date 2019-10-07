@@ -19,9 +19,9 @@
       - tomcat9
     state: present
 
-- name: "check that IdP version {{idp_version}} is installed"
+- name: "check that IdP version {{ idp_version }} is installed"
   stat:
-    path: "{{idp_dir}}/THIS_IS_IDP_{{idp_version}}"
+    path: "{{ idp_dir }}/THIS_IS_IDP_{{ idp_version }}"
   register: vf
 
 - name: "Create idp.war for tomcat with logo from {{ idp_logo_file }}"
@@ -29,8 +29,8 @@
   block:
     - name: "download IdP version {{ idp_version }}"
       get_url:
-        url: "https://shibboleth.net/downloads/identity-provider/{{idp_version}}/shibboleth-identity-provider-{{idp_version}}.tar.gz"
-        dest: "{{idp_tar_file}}"
+        url: "https://shibboleth.net/downloads/identity-provider/{{ idp_version }}/shibboleth-identity-provider-{{ idp_version }}.tar.gz"
+        dest: "{{ idp_tar_file }}"
     - name: "untar IdP"
       unarchive:
         remote_src: yes
@@ -45,7 +45,10 @@
         path: "{{ idp_dir }}"
         state: absent
     - name: "run installation script"
-      shell: ". /usr/libexec/tomcat9/tomcat-locate-java.sh; bin/install.sh -Didp.noprompt=true -Didp.src.dir={{ idp_src_dir }} -Didp.target.dir={{ idp_dir }} -Didp.host.name={{ idp_hostname }} -Didp.sealer.password=password -Didp.keystore.password=password -Didp.scope={{ idp_scope }} -Didp.entityID={{ idp_entity_id }}"
+      shell: >-
+        . /usr/libexec/tomcat9/tomcat-locate-java.sh; bin/install.sh -Didp.noprompt=true -Didp.src.dir={{ idp_src_dir }}
+        -Didp.target.dir={{ idp_dir }} -Didp.host.name={{ idp_hostname }} -Didp.sealer.password=password
+        -Didp.keystore.password=password -Didp.scope={{ idp_scope }} -Didp.entityID={{ idp_entity_id }}
       args:
         chdir: "{{ idp_src_dir }}"
     - name: "remove source dir"
@@ -234,7 +237,7 @@
           <Parameter name="idp.home" value="{{ idp_dir }}"/>
       </Context>
   notify: "restart tomcat"
-  
+
 - name: "create bash script for extracting statistics from logs"
   copy:
     dest: "{{ idp_download_dir }}/stats_{{ idp_id }}.sh"
