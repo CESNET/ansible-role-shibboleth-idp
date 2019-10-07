@@ -1,0 +1,245 @@
+---
+- name:  Ansible 2.5+ required
+  assert:
+    that:
+      - ansible_version is defined
+      - ansible_version.full is version_compare('2.5', '>=')
+    msg: "Required Ansible version is 2.5+ with import_role"
+- name: Require Debian 10
+  assert:
+    that:
+      - ansible_distribution == "Debian"
+      - ansible_distribution_major_version == "10"
+    msg: "Only Debian 10 is supported"
+
+- name: "install Apache and Tomcat"
+  apt:
+    name:
+      - apache2
+      - tomcat9
+    state: present
+
+- name: "check that IdP version {{idp_version}} is installed"
+  stat:
+    path: "{{idp_dir}}/THIS_IS_IDP_{{idp_version}}"
+  register: vf
+
+- name: "Create idp.war for tomcat with logo from {{ idp_logo_file }}"
+  when: not vf.stat.exists
+  block:
+    - name: "download IdP version {{ idp_version }}"
+      get_url:
+        url: "https://shibboleth.net/downloads/identity-provider/{{idp_version}}/shibboleth-identity-provider-{{idp_version}}.tar.gz"
+        dest: "{{idp_tar_file}}"
+    - name: "untar IdP"
+      unarchive:
+        remote_src: yes
+        src: "{{ idp_tar_file }}"
+        dest: "{{ idp_download_dir }}"
+    - name: "stop tomcat"
+      systemd:
+        name: tomcat9
+        state: stopped
+    - name: "remove target dir"
+      file:
+        path: "{{ idp_dir }}"
+        state: absent
+    - name: "run installation script"
+      shell: ". /usr/libexec/tomcat9/tomcat-locate-java.sh; bin/install.sh -Didp.noprompt=true -Didp.src.dir={{ idp_src_dir }} -Didp.target.dir={{ idp_dir }} -Didp.host.name={{ idp_hostname }} -Didp.sealer.password=password -Didp.keystore.password=password -Didp.scope={{ idp_scope }} -Didp.entityID={{ idp_entity_id }}"
+      args:
+        chdir: "{{ idp_src_dir }}"
+    - name: "remove source dir"
+      file:
+        path: "{{ idp_src_dir }}"
+        state: absent
+    - name: "download JSTL library"
+      get_url:
+        url: "https://build.shibboleth.net/nexus/service/local/repositories/thirdparty/content/javax/servlet/jstl/1.2/jstl-1.2.jar"
+        dest: "{{ idp_dir }}/edit-webapp/WEB-INF/lib/jstl-1.2.jar"
+    - name: "set logo from {{ idp_logo_file }}"
+      copy:
+        src: "{{ idp_logo_file }}"
+        dest: "{{ idp_dir }}/edit-webapp/images/{{ idp_logo_file }}"
+    - name: "rebuild idp with JSTL and logo"
+      shell: ". /usr/libexec/tomcat9/tomcat-locate-java.sh; bin/build.sh -Didp.noprompt=true"
+      args:
+        chdir: "{{ idp_dir }}"
+      notify: "restart tomcat"
+    - name: "make all files in {{ idp_dir }} readable by tomcat"
+      file:
+        recurse: yes
+        path: "{{ idp_dir }}"
+        owner: root
+        group: tomcat
+        mode: "u=rwX,g=rX,o="
+    - name: "make metadata dir writable by tomcat"
+      file:
+        path: "{{ idp_dir }}/metadata"
+        state: directory
+        owner: root
+        group: tomcat
+        mode: 0770
+    - name: "create file for marking the installed version"
+      file:
+        path: "{{ idp_dir }}/THIS_IS_IDP_{{ idp_version }}"
+        state: touch
+  #end of block
+
+- name: "make encryption optional"
+  lineinfile:
+    path: "{{ idp_dir }}/conf/idp.properties"
+    regexp: 'idp.encryption.optional ='
+    line:   'idp.encryption.optional = true'
+  notify: "restart tomcat"
+
+- name: "make cookies secure"
+  lineinfile:
+    path: "{{ idp_dir }}/conf/idp.properties"
+    regexp: 'idp.cookie.secure ='
+    line:   'idp.cookie.secure = true'
+  notify: "restart tomcat"
+
+- name: "workaround for JDK 11 problem"
+  lineinfile:
+    path: "{{ idp_dir }}/conf/idp.properties"
+    insertbefore: BOF
+    line: 'idp.ldaptive.provider = org.ldaptive.provider.unboundid.UnboundIDProvider'
+  notify: "restart tomcat"
+
+- name: "set attribute-filter.xml"
+  copy:
+    src: "{{ idp_attribute_filter_file }}"
+    dest: "{{ idp_dir }}/conf/attribute-filter.xml"
+    owner: root
+    group: tomcat
+    mode: 0640
+  notify: "restart tomcat"
+
+- name: "set attribute-resolver.xml"
+  copy:
+    src: "{{ idp_attribute_resolver_file }}"
+    dest: "{{ idp_dir }}/conf/attribute-resolver.xml"
+    owner: root
+    group: tomcat
+    mode: 0640
+  notify: "restart tomcat"
+
+- name: "set metadata-providers.xml"
+  copy:
+    src: "{{ idp_metadata_providers_file }}"
+    dest: "{{ idp_dir }}/conf/metadata-providers.xml"
+    owner: root
+    group: tomcat
+    mode: 0640
+  notify: "restart tomcat"
+
+- name: "set ldap.properties"
+  copy:
+    src: "{{ idp_ldap_properties_file }}"
+    dest: "{{ idp_dir }}/conf/ldap.properties"
+    owner: root
+    group: tomcat
+    mode: 0640
+  notify: "restart tomcat"
+
+- name: "set messages.properties"
+  copy:
+    src: "{{ idp_messages_properties_file }}"
+    dest: "{{ idp_dir }}/messages/messages.properties"
+    owner: root
+    group: tomcat
+    mode: 0640
+  notify: "restart tomcat"
+
+- name: "set idp-metadata.xml"
+  copy:
+    src: "{{ idp_own_metadata_file }}"
+    dest: "{{ idp_dir }}/metadata/idp-metadata.xml"
+    owner: root
+    group: tomcat
+    mode: 0640
+  notify: "restart tomcat"
+
+- name: "set metadata signature checking certs"
+  copy:
+    src: "{{ item }}"
+    dest: "{{ idp_dir }}/credentials/{{ item }}"
+    owner: root
+    group: tomcat
+    mode: 0640
+  loop: "{{ idp_metadata_providers_signing_cert_files }}"
+
+- name: "set idp-encryption.crt"
+  copy:
+    src: "{{ idp_encryption_cert_file }}"
+    dest: "{{ idp_dir }}/credentials/idp-encryption.crt"
+    owner: root
+    group: tomcat
+    mode: 0640
+
+- name: "set idp-encryption.key"
+  copy:
+    src: "{{ idp_encryption_key_file }}"
+    dest: "{{ idp_dir }}/credentials/idp-encryption.key"
+    owner: root
+    group: tomcat
+    mode: 0640
+
+- name: "set idp-signing.crt"
+  copy:
+    src: "{{ idp_signing_cert_file }}"
+    dest: "{{ idp_dir }}/credentials/idp-signing.crt"
+    owner: root
+    group: tomcat
+    mode: 0640
+
+- name: "set idp-signing.key"
+  copy:
+    src: "{{ idp_signing_key_file }}"
+    dest: "{{ idp_dir }}/credentials/idp-signing.key"
+    owner: root
+    group: tomcat
+    mode: 0640
+
+- name: "make logs dir writable by tomcat"
+  file:
+    path: "{{ idp_log_dir }}"
+    state: directory
+    owner: tomcat
+    group: tomcat
+    mode: 0770
+
+- name: "test link to external log dir"
+  stat:
+    path: "{{ idp_dir }}/logs"
+  register: logdir
+- name: "link external log dir"
+  when: not (logdir.stat.lnk_target is defined and logdir.stat.lnk_target==idp_log_dir)
+  block:
+    - name: "remove original logs dir"
+      file:
+        path: "{{ idp_dir }}/logs"
+        state: absent
+    - name: "create link to logs"
+      file:
+        src:  "{{ idp_log_dir }}"
+        dest: "{{ idp_dir }}/logs"
+        state: link
+
+- name: "deploy idp to tomcat"
+  copy:
+    dest: "/etc/tomcat9/Catalina/localhost/{{ idp_id }}.xml"
+    content: |
+      <Context docBase="{{ idp_dir }}/war/idp.war" privileged="true" antiResourceLocking="false" swallowOutput="true" >
+          <Parameter name="idp.home" value="{{ idp_dir }}"/>
+      </Context>
+  notify: "restart tomcat"
+  
+- name: "create bash script for extracting statistics from logs"
+  copy:
+    dest: "{{ idp_download_dir }}/stats_{{ idp_id }}.sh"
+    mode: 0755
+    content: |
+      #!/bin/bash
+      cd {{ idp_log_dir }}
+      zless idp-audit.log idp-audit-`date +"%Y-%m"`-* |  cut -d '|' --output-delimiter=' ' -f 4,9 |sort |uniq -c|sort -n

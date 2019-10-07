@@ -1,0 +1,16 @@
+---
+dependencies: []
+
+galaxy_info:
+  role_name: shibboleth_idp
+  author: Martin Kuba
+  company: CESNET
+  description: Installs Shibboleth IdP
+  license: "Apache 2.0"
+  min_ansible_version: 2.5
+  platforms:
+    - name: Debian
+      versions:
+        - buster
+  galaxy_tags:
+    - shibboleth

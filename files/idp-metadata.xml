@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EntityDescriptor  xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" entityID="https://sso.egi.eu/edugainidp/shibboleth">
+    <IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:mace:shibboleth:1.0">
+        <Extensions>
+            <shibmd:Scope regexp="false">example.org</shibmd:Scope>
+            <mdui:UIInfo>
+                <mdui:DisplayName xml:lang="en">The Example Org</mdui:DisplayName>
+                <mdui:Description xml:lang="en">The members of Example Org</mdui:Description>
+                <mdui:InformationURL xml:lang="en">http://www.example.org/</mdui:InformationURL>
+                <mdui:Logo height="146" width="184" >https://idp.example.org/idp/images/example_logo.png</mdui:Logo>
+            </mdui:UIInfo>
+        </Extensions>
+        <KeyDescriptor use="signing">
+            <ds:KeyInfo>
+                    <ds:X509Data>
+                        <ds:X509Certificate>
+MIIDGzCCAgOgAwIBAgIVALgVV4mMQYSlK4J7/VHxcZ/r62TfMA0GCSqGSIb3DQEB
+CwUAMBUxEzARBgNVBAMMCnNzby5lZ2kuZXUwHhcNMTkwNDE4MTQyMjE2WhcNMzkw
+NDE4MTQyMjE2WjAVMRMwEQYDVQQDDApzc28uZWdpLmV1MIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEAj3hguBYk4W5ysKIWsyc7Z40SSMqIk3cg35aI55KS
+tkP6d3b2PuLnRuc1/8gQAdxfUglspcXVRKhlFD0tpWkqTvvpcky9032WC1uECrg9
+c9aS5PkSOUnHQ17dAIBeRtHk0jtQZ97JSCkSePcvkpRO9wbVfiiwKp2mHq3PeIgy
+lDZ2IOBLH0fAsQp7PTOdqNCowsVdQJ6IvWaWgvnLbquEaiU3DKqEb74VNokNpTcS
+L8SEexWq9PXpdgFkzGVC0WsToWVSOJRfqfTuO0NbUhBa4KtDHEYi28dCsV0tnWtt
+U44z8NAnbbBBSHc0FVsQHPlOTldJVzeTzdSI0bd4K7GT4QIDAQABo2IwYDAdBgNV
+HQ4EFgQUY6K6bXZ6FWpollSMlJddXQJU8JcwPwYDVR0RBDgwNoIKc3NvLmVnaS5l
+dYYoaHR0cHM6Ly9zc28uZWdpLmV1L2VkdWdhaW5pZHAvc2hpYmJvbGV0aDANBgkq
+hkiG9w0BAQsFAAOCAQEAG4inapey2ab0Pciop4j8AZj1j5QZe03FxduK27v1PYQZ
+3ZqoHI3eloWtvv73+e2aPuBC3Mp84SIVljQuyPzzp3Lik5z4+3c5DJT0Yjakpkzi
+gs3EUNYAXJAirKJLUr7+p9vrgeKYLvglBvnkC5fUxhmPnylHN+viRH8OvqzcEdGg
+gXlHJM6YNrx9TWrg9hLcanODbo6QpaxJkJKMSjWO9D/DLGI2FEDr3j/bdc3F0Q1n
+IcUzbrkCla4t/aZI5384Ro1rc7y7Q1D4Vh6nxDS7bnq62UHBpyQ8ULCzMeGm56rE
+YKo7vqTM2wsAS8Qp+9eqbnNxwFDsJksRzPo6r9Xbww==
+                        </ds:X509Certificate>
+                    </ds:X509Data>
+            </ds:KeyInfo>
+        </KeyDescriptor>
+        <KeyDescriptor use="encryption">
+            <ds:KeyInfo>
+                    <ds:X509Data>
+                        <ds:X509Certificate>
+MIIDGjCCAgKgAwIBAgIUSqlrEZeWIlNW6Wm8wieFU79kNCowDQYJKoZIhvcNAQEL
+BQAwFTETMBEGA1UEAwwKc3NvLmVnaS5ldTAeFw0xOTA0MTgxNDIwMzZaFw0zOTA0
+MTgxNDIwMzZaMBUxEzARBgNVBAMMCnNzby5lZ2kuZXUwggEiMA0GCSqGSIb3DQEB
+AQUAA4IBDwAwggEKAoIBAQCP9ldolpp+donoNi1fHiK2FvymgWNM0aBvQghf5XPi
+UbQIVSw6abYn+SRQLX7LbOPeSOl02q+mRYhHL7Fbi6Q7Iuq7/HN0fkq/KZdeNdGT
+8XGo+m4g5A1TDiJOSDbbkONrr36slw1jJ40zWca0zeijKnU4qD/BwFknWJc/QjBF
+FUp60z8IMRbo2A6DRwnI1XfDvUw64y3y/QZ7OvVNCeXaSidwHZ8gUcLIb+5RfvdX
+SR4fT0FUCuhfb4n66P/ux2Uu+d/sm5iBMmEgIeGTBcDqqhJY/EgrapEl+f0FpJqY
+RMJ+T8yPWN4KSZHj4TOL85LsR9itSljio8AvmS2pp4ZVAgMBAAGjYjBgMB0GA1Ud
+DgQWBBRm2oNbMeXzxP4Y/bt5M8Qodk1AFjA/BgNVHREEODA2ggpzc28uZWdpLmV1
+hihodHRwczovL3Nzby5lZ2kuZXUvZWR1Z2FpbmlkcC9zaGliYm9sZXRoMA0GCSqG
+SIb3DQEBCwUAA4IBAQAYSZRUEY/b8/vnw7UnAyUkJBcljus1vJ94YTPGMqWi7eoe
+bUJwSx1ykwm6RMB/ZAYJWda5Q7kNGW25WVmsX/6GVNEAQz7LuBp2gqSqQTu8BNEm
+OeWGcodXQvWXOWJZfXIb/l+861ab/jPXxBIrK3+xbUpvhxMi1TLBuaJq8jkSiEXk
+OT1caZhayjeFRd+v6KB9wvDhN9dasstkOKQUCQBX7z3MnyQXtdLSyfAu0jciC4B5
+0OOqlFdIZoK2lbcuGTkUqPhra1geNNdYK8HLrGNVAFaBNBe2N/QpDSWkfvGdeYxh
+m5zE+bMU4rZROjLe798STdWpBMOFHPtaQl2eLyj6
+                        </ds:X509Certificate>
+                    </ds:X509Data>
+            </ds:KeyInfo>
+        </KeyDescriptor>
+
+        <NameIDFormat>urn:mace:shibboleth:1.0:nameIdentifier</NameIDFormat>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+
+        <SingleSignOnService Binding="urn:mace:shibboleth:1.0:profiles:AuthnRequest" Location="https://idp.example.org/idp/profile/Shibboleth/SSO"/>
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://idp.example.org/idp/profile/SAML2/POST/SSO"/>
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign" Location="https://idp.example.org/idp/profile/SAML2/POST-SimpleSign/SSO"/>
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://idp.example.org/idp/profile/SAML2/Redirect/SSO"/>
+    </IDPSSODescriptor>
+   <Organization>
+      <OrganizationName xml:lang="en">Example Org</OrganizationName>
+      <OrganizationDisplayName xml:lang="en">Example Organization</OrganizationDisplayName>
+      <OrganizationURL xml:lang="en">http://www.example.org/</OrganizationURL>
+    </Organization>
+    <ContactPerson contactType="technical">
+      <GivenName>John</GivenName>
+      <SurName>Doe</SurName>
+      <EmailAddress>support@example.org</EmailAddress>
+    </ContactPerson>
+</EntityDescriptor>
