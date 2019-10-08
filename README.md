@@ -14,17 +14,22 @@ They will usually be located in the folder name **files/** relative to the playb
 If you install more than one IdP on a single machine, redefine the variables idp_*_file to point to other files.
 The role provides dummy files with examples, but you have to provide your own files.
 
-The files holding private keys (by default named idp-encryption.key and idp-signing.key, or the ones referenced by 
-variables idp_encryption_key_file and idp_signing_key_file) should be encrypted as Ansible vaults, i.e. by issuing:
-```bash
-ansible-vault encrypt files/idp-encryption.key
-ansible-vault encrypt files/idp-signing.key
-```
-The dummy files are encrypted with the password "test". 
-
 In Debian 10, applications running in system Tomcat cannot write outside of their folders for security reasons.
 We recommend to use the role [cesnet.tomcat](https://galaxy.ansible.com/cesnet/tomcat) to enable it, see the example below. 
 
+Encryption of files containings secrets
+---------------------------------------
+
+The files holding private keys (by default named **idp-encryption.key** and **idp-signing.key**, or the files referenced by 
+variables **idp_encryption_key_file** and **idp_signing_key_file**) or password (**ldap.properties** or the file referenced by variable **idp_ldap_properties_file**)
+should be encrypted as Ansible vaults, i.e. by issuing:
+```bash
+ansible-vault encrypt files/idp-encryption.key
+ansible-vault encrypt files/idp-signing.key
+ansible-vault encrypt files/ldap.properties
+```
+The dummy files are encrypted with the password "test". We recommend to put the vault password into a file named .password and
+add the line "vault_password_file=.password" into ansible.cfg, then you will not have to type the password manually.
 
 Role Variables
 --------------
