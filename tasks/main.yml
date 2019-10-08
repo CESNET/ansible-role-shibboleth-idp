@@ -166,7 +166,7 @@
 - name: "set metadata signature checking certs"
   copy:
     src: "{{ item }}"
-    dest: "{{ idp_dir }}/credentials/{{ item }}"
+    dest: "{{ idp_dir }}/credentials/"
     owner: root
     group: tomcat
     mode: 0640
