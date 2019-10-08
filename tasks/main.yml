@@ -62,7 +62,7 @@
     - name: "set logo from {{ idp_logo_file }}"
       copy:
         src: "{{ idp_logo_file }}"
-        dest: "{{ idp_dir }}/edit-webapp/images/{{ idp_logo_file }}"
+        dest: "{{ idp_dir }}/edit-webapp/images/"
     - name: "rebuild idp with JSTL and logo"
       shell: ". /usr/libexec/tomcat9/tomcat-locate-java.sh; bin/build.sh -Didp.noprompt=true"
       args:

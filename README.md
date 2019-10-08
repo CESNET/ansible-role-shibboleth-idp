@@ -63,6 +63,13 @@ Example Playbook
 ```yaml
 - hosts: all
   tasks:
+    - name: "enable writing outside of system Tomcat"
+      import_role:
+        name: cesnet.tomcat
+      vars:
+        tomcat_readwrite_paths:
+          - /opt/my-idp/metadata
+          - /var/log/myidp
     - name: "install My IdP"
       import_role:
         name: cesnet.shibboleth_idp
@@ -76,11 +83,4 @@ Example Playbook
         idp_hostname: "www.example.org"
         idp_scope: "example.org"
         idp_logo_file: "example_logo.png"
-    - name: "enable reading and writing outside of system Tomcat"
-      import_role:
-        name: cesnet.tomcat
-      vars:
-        tomcat_readwrite_paths: 
-          - /opt/my-idp/metadata
-          - /var/log/myidp
 ```
